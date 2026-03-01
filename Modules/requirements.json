@@ -1,0 +1,10 @@
+{
+  "commands": [
+    "pip install time",
+    "pip install tqdm",
+    "pip install pyglet",
+    "pip install tkinter",
+    "pip install pyfiglet",
+    "pip install requests"
+  ]
+}
