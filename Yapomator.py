@@ -33,4 +33,4 @@ header.pack(pady=40)
 
 log("Starting Tkinter mainloop.")
 root.mainloop()
-exit()
+exit(0)

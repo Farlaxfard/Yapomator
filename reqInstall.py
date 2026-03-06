@@ -4,7 +4,6 @@ import sys
 import importlib.util
 import os
 import time
-from Modules import installer
 import requests
 
 
@@ -30,7 +29,7 @@ def run_smart_install(json_filename):
             if "install" in parts:
                 package_name = parts[parts.index("install") + 1]
             else:
-                continue  # Skip if it's not an install command
+                continue  # Skip if it's not an installation command
 
             if is_module_installed(package_name):
                 print(f"✅ {package_name} is already available. Skipping...")
@@ -55,14 +54,45 @@ def run_smart_install(json_filename):
 
 
 def downloadInstaller():
-    pass
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    installer_path = os.path.join(script_dir, "Modules", "installer.py")
+
+    installer_url = "https://github.com/Farlaxfard/Yapomator/raw/refs/heads/main/Modules/installer.py"
+
+    print("\n📦 Downloading installer module...")
+
+    try:
+        r = requests.get(installer_url, stream=True, timeout=15)
+        r.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to download installer: {e}")
+        return False
+
+    total_size = int(r.headers.get("content-length", 0))
+    chunk_size = 8192
+
+    os.makedirs(os.path.dirname(installer_path), exist_ok=True)
+
+    with open(installer_path, "wb") as f:
+        downloaded = 0
+        for chunk in r.iter_content(chunk_size=chunk_size):
+            if chunk:
+                f.write(chunk)
+                downloaded += len(chunk)
+
+    print("Installer module downloaded successfully.")
+    return True
 
 
 if __name__ == "__main__":
     run_smart_install("Modules/requirements.json")
-    downloadInstaller()
+    if not downloadInstaller():
+        sys.exit(1)
 
     time.sleep(0.5)
     print("\n Launching WISDOM Installer...")
 
-    installer.install()
+    from Modules import installer
+
+    # installer.install()
+exit(0)
